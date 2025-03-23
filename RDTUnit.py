@@ -1,3 +1,8 @@
+"""
+Author: Caleb Naeger - cmn4315@rit.edu
+RDTUnit.py
+Classes for Reliable Data Transfer Senders and Receivers.
+"""
 import socket
 import struct
 import time
