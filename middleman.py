@@ -45,7 +45,7 @@ def main(dst, src, dstport, srcport, loss, reorder, corrupt, myport, timeout = 1
 
 if __name__ == "__main__":
     # Create the parser
-    parser = argparse.ArgumentParser(description='A simple ping utility')
+    parser = argparse.ArgumentParser(description='Middleman for testing RDTUnits, with the capability to corrupt, reorder, or drop packets.')
     
     # Add arguments
     parser.add_argument('-dst', required=False, type=str, default='127.0.0.1', help='The destination IP address for the RDTReceiver')

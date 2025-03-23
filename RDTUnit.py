@@ -99,7 +99,6 @@ class RDTSender():
                 if to_send < (window_start + self.window_size) or end_time != -1 or resend_last:
                     if to_send == -1 or end_time != -1:
                         print("Sender: sending End. packet")
-                        time.sleep(.5) # wait after sending the end packet, to avoid sending so many if EndAck is lost
                         packet = get_packet(0, bytes("RDTEnd.", "utf-8"), seqnum=(last_packet + 1))
                         if end_time == -1:
                             end_time = time.perf_counter()
@@ -126,6 +125,7 @@ class RDTRecvr():
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:# this will handle the checksum business for us.
             last_recvd = -1
             sock.bind(("127.0.0.1", self.srcport))
+            addr = ""
             while(self.run):
                 # Check for ACK recvd
                 data, addr = sock.recvfrom(1024)  # Try receiving data
@@ -134,7 +134,11 @@ class RDTRecvr():
                 calcdchecksum = calculate_checksum(data[2:])
                 data = data[6:]
                 msg = bytes("RDTAck.", "utf-8")
-                if(int.from_bytes(checksum) == calcdchecksum and data.decode('utf-8') == "RDTEnd."):
+                try:
+                    decoded = data.decode('utf-8')
+                except UnicodeDecodeError:
+                    decoded = ""
+                if(int.from_bytes(checksum) == calcdchecksum and decoded == "RDTEnd."):
                     self.run = False
                     msg = bytes("RDTEndAck.", 'utf-8')
                     print("Receiver: received End. Sending EndAck.")
@@ -147,7 +151,8 @@ class RDTRecvr():
                 print(f"Receiver: received packet number {seq}, Sending ACK {last_recvd}")
 
                 sock.sendto(get_packet(0, msg, seqnum=last_recvd), addr)
-            return self.recvd_data
+            print(addr)
+            return self.recvd_data, addr
 
 
 def main(mode, dst, dstport, srcport):
@@ -156,7 +161,7 @@ def main(mode, dst, dstport, srcport):
         recvr.start()
     elif mode == "send":
         data = ""
-        for i in range(1024):
+        for i in range(1):
             data = data + str(i) + ", "
         sender = RDTSender(bytes(data[:-2], 'utf-8'), srcport=srcport, dstip = dst)
         sender.start()
