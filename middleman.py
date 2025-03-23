@@ -1,3 +1,7 @@
+"""
+Author: Caleb Naeger - cmn4315@rit.edu
+Middleman to test RDT Sender and Recvr
+"""
 import socket
 import argparse
 import random
@@ -8,6 +12,18 @@ REORDERCHANCE = 10
 CORRUPTCHANCE = 15
 
 def main(dst, src, dstport, srcport, loss, reorder, corrupt, myport, timeout = 10):
+    """Main function for middleman. Will receive packets, randomly decide to corrupt, reorder or drop
+    them based on user flags, and then forward them on.
+    :param dst: IP address for the RDTRecvr to forward packets to and from
+    :param src: IP address for the RDTSender
+    :param dstport: Port for the Recvr
+    :param srcport: Port for the Sender
+    :param loss: Boolean for whether or not to randomly drop packets
+    :param reorder: Boolean for whether or not to randomly reorder packets
+    :param corrupt: Boolean for whether or not to randomly corrupt packets
+    :param myport: port to listen for packets on
+    :param timeout: timeout to pass to Sender.
+    """
     start = time.perf_counter()
     dest_addrs = {}
     dest_addrs[(src, srcport)] = (dst, dstport)

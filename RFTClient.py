@@ -1,8 +1,20 @@
+"""
+Author: Caleb Naeger - cmn4315@rit.edu
+Client for ReFileAble Transfer.
+"""
 import argparse
 import RDTUnit
 
 
 def main(mode: str, server_ip: str, server_port: int, filename: str, my_port: int, timeout: int = 1):
+    """Main for RFT Client. Will send a request to the server, then begin sending or receiving a file.
+    :param mode: mode to run the client in, either 'send' to send a file to the server or 'recv' to request one
+    :param server_ip: dotted decimal string of the server's IP
+    :param server_port: integer port for the server
+    :param filename: name of the file to send or request
+    :param my_port: port to use for client's RDTSender/RDTRecvr(s)
+    :param timeout: timeout value to pass to RDTSender
+    """
     msg = ""
     if mode == "send":
         msg = bytes("RFTSend." + filename, "utf-8")

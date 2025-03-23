@@ -25,6 +25,10 @@ def calculate_checksum(data):
 
 def get_packet(pktnum: int, data: bytes, pktsize: int = 64, seqnum: int = -1):
     """ Get the portion of data that the {pktnum}th packet should contain, and add some RDT header info. 
+    :param pktnum: the index of the packet to get from the data
+    :param data: the data to extract packets from
+    :param pktsize: the number of data bytes to include in each packet
+    :param seqnum: the RDT sequence number to attach to the packet. if seqnum is not provided, pktnum is used instead.
     """
     if(seqnum == -1):
         seqnum = pktnum
