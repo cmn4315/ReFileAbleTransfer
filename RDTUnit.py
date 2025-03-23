@@ -42,8 +42,10 @@ def get_packet(pktnum: int, data: bytes, pktsize: int = 64, seqnum: int = -1):
     return pktdata
 
 class RDTSender():
+    """RDT Sender Class"""
     def __init__(self, data: bytes, dstip: str = "127.0.0.1", dstport: int = 8081, srcport: int = 8080, window_size = 10,
                  timeout: int = 1, pktsize: int = 64) -> None:
+        """Constructor for RDTSender"""
         self.dstip = dstip
         self.dstport = dstport
         self.srcport = srcport
@@ -55,6 +57,7 @@ class RDTSender():
         self.kill_timeout = 10
 
     def start(self):
+        """Start the sender sending data. Will follow a Go-Back-N algorithm for packet retransmission"""
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:# this will handle the checksum business for us.
             sock.setblocking(False)
             sock.bind(('127.0.0.1', self.srcport))
@@ -120,12 +123,15 @@ class RDTSender():
                         to_send += 1
 
 class RDTRecvr():
+    """RDT Receiver Class"""
     def __init__(self, srcport: int = 8082) -> None:
+        """Constructor for an RDT Receiver"""
         self.srcport = srcport
         self.run = True
         self.recvd_data = bytes("", "utf-8")
 
     def start(self):
+        """Open the RDT Receiver to receive data, using cumulative acknowledgements to respond to packets"""
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:# this will handle the checksum business for us.
             last_recvd = -1
             sock.bind(("127.0.0.1", self.srcport))
@@ -160,6 +166,12 @@ class RDTRecvr():
 
 
 def main(mode, dst, dstport, srcport):
+    """Main method, allowing this file to be run as a way to test senders and receivers.
+    :param mode: the mode to run in, either as a sender or receiver
+    :param dst: destination IP for a sender to send packets to
+    :param dstport: port for the receiver to listen on, if run in that mode
+    :param srcport: port for the sender's socket to use.'
+    """
     if mode == "recv":
         recvr = RDTRecvr(dstport)
         recvr.start()
